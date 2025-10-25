@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const mongoURI = process.env.MONGOURI;
+console.log('🔍 Mongo URI value:', mongoURI ? 'Loaded ✅' : '❌ Undefined');
 
 const connectDB = async () => {
   try {
