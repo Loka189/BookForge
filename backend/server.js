@@ -9,7 +9,10 @@ const bookRoutes = require('./routes/bookRoute');
 const aiRoutes = require('./routes/aiRoutes');
 const exportRoutes = require('./routes/exportRoute');
 
+const rateLimiter=require('./middlewares/rateLimiter');
+
 const app = express();
+
 
 // middleware to handle cors
 app.use(cors({
@@ -24,6 +27,7 @@ connectDB();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(rateLimiter({ windowSize: 60, maxRequests: 2 }));
 
 
 //static folder for uploads

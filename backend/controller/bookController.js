@@ -1,5 +1,5 @@
 const Book = require('../models/Book');
-
+const redisClient = require('../config/redisClient');
 // @desc  Create new book
 // @route POST /api/books
 // @access Private
@@ -26,13 +26,38 @@ exports.createBook = async (req, res) => {
 // @route GET /api/books
 // @access Private
 exports.getBooks = async (req, res) => {
-    try {
-        const books = await Book.find({ userID: req.user._id }).sort({ createdAt: -1 });
-        res.status(200).json(books);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+  try {
+    const userID = req.user._id.toString();
+
+    // 1️⃣ Try Redis cache first
+    const cacheKey = `books:${userID}`;
+    const cachedBooks = await redisClient.get(cacheKey);
+
+    if (cachedBooks) {
+      console.log("📦 Serving from Redis cache");
+      return res.status(200).json(JSON.parse(cachedBooks));
     }
+
+    // 2️⃣ Cache miss → fetch from MongoDB
+    console.log("💾 Cache miss → fetching from MongoDB");
+    const books = await Book.find({ userID }).sort({ createdAt: -1 });
+
+    if (!books) {
+      return res.status(404).json({ message: "No books found" });
+    }
+
+    // 3️⃣ Cache result for 1 hour (3600 seconds)
+    if (books.length > 0) {
+      await redisClient.setEx(cacheKey, 3600, JSON.stringify(books));
+    }
+
+    return res.status(200).json(books);
+  } catch (error) {
+    console.error("getBooks error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
 };
+
 
 // @desc  Get a single book by ID
 // @route GET /api/books/:id
