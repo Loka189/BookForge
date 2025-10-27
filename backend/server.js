@@ -27,7 +27,7 @@ connectDB();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(rateLimiter({ windowSize: 60, maxRequests: 2 }));
+app.use(rateLimiter({ windowSize: 60, maxRequests: 15 }));
 
 
 //static folder for uploads
