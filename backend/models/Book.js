@@ -19,6 +19,7 @@ const BookSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User',
+        index: true,
     },
     title: {
         type: String,
@@ -46,5 +47,8 @@ const BookSchema = new mongoose.Schema({
         default: 'draft',
     },
 }, { timestamps: true });
+
+BookSchema.index({ userID: 1, createdAt: -1 });
+
 
 module.exports = mongoose.model('Book', BookSchema);
