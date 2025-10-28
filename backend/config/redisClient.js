@@ -1,6 +1,6 @@
 const { createClient } = require("redis");
 
-const client = createClient({
+const redisClient = createClient({
   username: "default",
   password: process.env.REDIS_PASSWORD,
   socket: {
@@ -9,15 +9,35 @@ const client = createClient({
   },
 });
 
-client.on("connect", () => console.log("✅ Connected to Redis"));
-client.on("error", (err) => console.error("❌ Redis Error:", err));
+const redisStatus = {
+  isHealthy: false
+};
+
+redisClient.on("error", (err) => {
+  redisStatus.isHealthy = false;
+  console.warn("🚨 Redis connection error:", err.message);
+});
+
+redisClient.on("connect", () => {
+  redisStatus.isHealthy = true;
+  console.log("✅ Connected to Redis");
+});
+
+redisClient.on("end", () => {
+  redisStatus.isHealthy = false;
+  console.warn("❌ Redis connection closed");
+});
+redisClient.on("reconnecting", () => {
+  console.log("🔄 Reconnecting to Redis...");
+});
 
 (async () => {
   try {
-    await client.connect();
+    await redisClient.connect();
   } catch (err) {
-    console.error("❌ Redis connection failed:", err);
+    redisStatus.isHealthy = false;
+    console.error("❌ Failed to connect to Redis:", err.message);
   }
 })();
 
-module.exports = client;
+module.exports = { redisClient, redisStatus };
