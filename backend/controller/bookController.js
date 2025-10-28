@@ -1,5 +1,5 @@
 const Book = require('../models/Book');
-const redisClient = require('../config/redisClient');
+const { getCache, setCache,delCache } = require('../services/cacheService');
 // @desc  Create new book
 // @route POST /api/books
 // @access Private
@@ -16,6 +16,9 @@ exports.createBook = async (req, res) => {
             subtitle,
             chapters
         });
+        const cacheKey = `books:${req.user._id.toString()}`;
+        // Invalidate cache for this user
+        await delCache(cacheKey);
         res.status(201).json(book);
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
@@ -31,16 +34,16 @@ exports.getBooks = async (req, res) => {
 
     // 1️⃣ Try Redis cache first
     const cacheKey = `books:${userID}`;
-    const cachedBooks = await redisClient.get(cacheKey);
+    const cachedBooks = await getCache(cacheKey);
 
     if (cachedBooks) {
       console.log("📦 Serving from Redis cache");
-      return res.status(200).json(JSON.parse(cachedBooks));
+      return res.status(200).json(cachedBooks);
     }
 
     // 2️⃣ Cache miss → fetch from MongoDB
     console.log("💾 Cache miss → fetching from MongoDB");
-    const books = await Book.find({ userID }).sort({ createdAt: -1 });
+    const books = await Book.find({ userID }).sort({ createdAt: -1 }); 
 
     if (!books) {
       return res.status(404).json({ message: "No books found" });
@@ -48,7 +51,7 @@ exports.getBooks = async (req, res) => {
 
     // 3️⃣ Cache result for 1 hour (3600 seconds)
     if (books.length > 0) {
-      await redisClient.setEx(cacheKey, 3600, JSON.stringify(books));
+      await setCache(cacheKey, books, 3600);
     }
 
     return res.status(200).json(books);

@@ -1,7 +1,12 @@
-const redisClient = require("../config/redisClient");
+const { redisClient, redisStatus } = require("../config/redisClient");
 
 function rateLimiter({ windowSize = 60, maxRequests = 10 }) {
   return async (req, res, next) => {
+    // If Redis is down, skip rate limiting
+    if (!redisStatus.isHealthy) {
+      console.warn("⚠️ Redis is down, skipping rate limiting");
+      return next();
+    }
     try {
       const userKey = req.user?._id || req.ip;
       const key = `rate:${userKey}`;
