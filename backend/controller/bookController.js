@@ -164,3 +164,16 @@ exports.updateBookCover = async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     }
 };
+
+// @desc  get all published books
+// @route GET /api/books/published
+// @access Public
+exports.getPublishedBooks = async (req, res) => {
+    try {
+        const books = await Book.find({ status: "published" }).sort({ createdAt: -1 });
+        res.status(200).json(books);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

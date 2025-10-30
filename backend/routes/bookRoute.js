@@ -1,15 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { createBook, getBooks, getBookById, updateBook, deleteBook,updateBookCover } = require('../controller/bookController');
+const { createBook, getBooks, getBookById, updateBook, deleteBook,updateBookCover,getPublishedBooks } = require('../controller/bookController');
 const { protect } = require('../middlewares/authMiddleware');
 const upload=require('../middlewares/uploadMiddleware');
 
-// Apply protection middleware to all book routes
-router.use(protect);
 
 // Define book routes
-router.route('/').post(createBook).get(getBooks);
-router.route('/:id').get(getBookById).put(updateBook).delete(deleteBook);
-router.route('/cover/:id').put(upload, updateBookCover);
+
+// public route to get published books
+router.get('/published', getPublishedBooks);
+
+// protected routes for user's books
+router.get('/', protect, getBooks);
+router.post('/', protect, createBook);
+
+router.get('/:id', protect, getBookById);
+router.put('/:id', protect, updateBook);
+router.delete('/:id', protect, deleteBook);
+
+router.put('/cover/:id', protect, upload, updateBookCover);
+
 
 module.exports = router; 
