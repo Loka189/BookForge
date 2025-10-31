@@ -28,9 +28,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-//static folder for uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);

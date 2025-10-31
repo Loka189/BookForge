@@ -37,8 +37,8 @@ const BookSchema = new mongoose.Schema({
         trim: true,
     },
     coverImage: {
-        type: String,
-        default: '',
+        url: { type: String, default: '' },
+        public_id: { type: String, default: '' },
     },
     chapters: [chapterSchema],
     status: {

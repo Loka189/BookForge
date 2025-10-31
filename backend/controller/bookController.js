@@ -1,5 +1,6 @@
 const Book = require('../models/Book');
 const { getCache, setCache,delCache } = require('../services/cacheService');
+const cloudinary = require('../config/cloudinary');
 // @desc  Create new book
 // @route POST /api/books
 // @access Private
@@ -118,7 +119,7 @@ exports.deleteBook = async (req, res) => {
     }
 };
 
-// @desc Update a book's cover image
+// @desc Update a book's cover image (Cloudinary)
 // @route PUT /api/books/cover/:id
 // @access Private
 const fs = require('fs');
@@ -141,20 +142,20 @@ exports.updateBookCover = async (req, res) => {
         }
 
         // Delete old cover image if it exists
-        if (book.coverImage) {
-            const oldPath = path.join(__dirname, '..', book.coverImage);
-            fs.access(oldPath, fs.constants.F_OK, (err) => {
-                if (!err) {
-                    fs.unlink(oldPath, (err) => {
-                        if (err) console.error('Failed to delete old cover image:', err);
-                        else console.log('Old cover image deleted');
-                    });
-                }
-            });
+        if(book.coverImage && book.coverImage.public_id){
+            try {
+                await cloudinary.uploader.destroy(book.coverImage.public_id);
+                console.log('Old cover image deleted from Cloudinary');
+            } catch (error) {
+                console.error('Failed to delete old cover image from Cloudinary:', error.message);
+            }
         }
 
         // Update book with new cover image
-        book.coverImage = `/uploads/${req.file.filename}`;
+        book.coverImage = {
+            url: req.file.path,
+            public_id: req.file.filename || req.file.public_id
+        }
         const updatedBook = await book.save();
 
         return res.status(200).json(updatedBook);

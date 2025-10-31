@@ -20,7 +20,6 @@ router.get('/:id', getBookById);
 router.put('/:id', updateBook);
 router.delete('/:id', deleteBook);
 
-router.put('/cover/:id', upload, updateBookCover);
+router.put('/cover/:id', upload.single('coverImage'), updateBookCover);
 
-
-module.exports = router; 
+module.exports = router;
