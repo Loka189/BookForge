@@ -8,7 +8,7 @@ function rateLimiter({ windowSize = 60, maxRequests = 10 }) {
       return next();
     }
     try {
-      const userKey = req.user?._id || req.ip;
+      const userKey = req.user?._id?.toString() || req.ip;
       const key = `rate:${userKey}`;
       const now = Date.now();
 

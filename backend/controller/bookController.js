@@ -43,7 +43,7 @@ exports.getBooks = async (req, res) => {
 
     // 2️⃣ Cache miss → fetch from MongoDB
     console.log("💾 Cache miss → fetching from MongoDB");
-    const books = await Book.find({ userID }).sort({ createdAt: -1 }); 
+    const books = await Book.find({ userID }).sort({ createdAt: -1 }).select('-chapters').lean();
 
     if (!books) {
       return res.status(404).json({ message: "No books found" });
@@ -170,7 +170,16 @@ exports.updateBookCover = async (req, res) => {
 // @access Public
 exports.getPublishedBooks = async (req, res) => {
     try {
-        const books = await Book.find({ status: "published" }).sort({ createdAt: -1 });
+        // search in redis cache first
+        const cachedBooks = await getCache('publishedBooks');
+        if (cachedBooks) {
+            console.log("📦 Serving published books from Redis cache");
+            return res.status(200).json(cachedBooks);
+        }
+        // if cache miss, fetch from MongoDB
+        console.log("💾 Cache miss → fetching published books from MongoDB");
+        const books = await Book.find({ status: "published" }).sort({ createdAt: -1 }).select('-chapters').lean();
+        await setCache('publishedBooks', books);
         res.status(200).json(books);
     } catch (error) {
         console.error(error);

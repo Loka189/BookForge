@@ -8,6 +8,7 @@ import EditorPage from './pages/EditorPage';
 import ViewBookPage from './pages/ViewBookPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import BooksPage from './pages/BooksPage';
 const App = () => {
   return (
     <div>
@@ -19,6 +20,8 @@ const App = () => {
 
         {/* Protected Routes */}
         <Route path='/dashboard' element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        
+        <Route path='/books' element={<ProtectedRoute><BooksPage /></ProtectedRoute>} />
 
         <Route path='/editor/:bookId' element={<ProtectedRoute><EditorPage /></ProtectedRoute>} />
 

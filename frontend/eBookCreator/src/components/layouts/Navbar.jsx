@@ -8,23 +8,29 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
-  const navLinks = [
-    { name: "features", href: "#features" },
-    { name: "testimonials", href: "#testimonials" },
-    { name: "pricing", href: "#pricing" },
+  // Different nav links based on auth state
+  const publicNavLinks = [
+    { name: "Features", href: "#features" },
+    { name: "Testimonials", href: "#testimonials" },
+    { name: "Pricing", href: "#pricing" },
   ];
+
+  const authenticatedNavLinks = [
+    { name: "Dashboard", href: "/dashboard" },
+    { name: "Browse Books", href: "/books" },
+  ];
+
+  const navLinks = isAuthenticated ? authenticatedNavLinks : publicNavLinks;
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = () => {
       if (profileDropdownOpen) {
         setProfileDropdownOpen(false);
       }
     };
     document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
+    return () => document.removeEventListener("click", handleClickOutside);
   }, [profileDropdownOpen]);
 
   return (
@@ -45,16 +51,16 @@ const Navbar = () => {
           <nav className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => (
               <a
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-violet-600 rounded-xl hover:bg-violet-50/60 transition-all duration-200"
                 key={link.name}
                 href={link.href}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-violet-600 rounded-xl hover:bg-violet-50/60 transition-all duration-200"
               >
                 {link.name}
               </a>
             ))}
           </nav>
 
-          {/* Auth Buttons && Profile */}
+          {/* Auth Buttons / Profile */}
           <div className="hidden lg:flex items-center space-x-3">
             {isAuthenticated ? (
               <ProfileDropdown
@@ -67,7 +73,7 @@ const Navbar = () => {
                 companyName={user?.companyName || ""}
                 email={user?.email || ""}
                 userRole={user?.role || ""}
-                onLogout={() => {
+                onLogout={(e) => {
                   e.stopPropagation();
                   logout();
                 }}
@@ -75,14 +81,14 @@ const Navbar = () => {
             ) : (
               <>
                 <a
-                  className="px-4 py-2 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-100 transition-all duration-200"
                   href="/login"
+                  className="px-4 py-2 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-100 transition-all duration-200"
                 >
                   Login
                 </a>
                 <a
-                  className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl hover:from-violet-600 hover:to-purple-600 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all duration-300 hover:scale-105"
                   href="/register"
+                  className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl hover:from-violet-600 hover:to-purple-600 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all duration-300 hover:scale-105"
                 >
                   Get Started
                 </a>
@@ -106,14 +112,15 @@ const Navbar = () => {
           <nav className="px-4 py-4 space-y-1">
             {navLinks.map((link) => (
               <a
-                className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 transition-all duration-200"
-                href={link.href}
                 key={link.name}
+                href={link.href}
+                className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 transition-all duration-200"
               >
                 {link.name}
               </a>
             ))}
           </nav>
+
           <div className="px-4 py-4 border-t border-gray-100">
             {isAuthenticated ? (
               <div className="space-y-3">
@@ -132,8 +139,8 @@ const Navbar = () => {
                 </div>
 
                 <button
+                  onClick={logout}
                   className="w-full px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
-                  onClick={() => logout()}
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Logout</span>
@@ -142,14 +149,14 @@ const Navbar = () => {
             ) : (
               <div className="space-y-2">
                 <a
-                  className="block text-center px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
                   href="/login"
+                  className="block text-center px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
                 >
                   Login
                 </a>
                 <a
+                  href="/register"
                   className="block text-center px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-purple-600 rounded-lg shadow-lg shadow-violet-500/30 transition-all duration-200"
-                  href="/signup"
                 >
                   Get Started
                 </a>
