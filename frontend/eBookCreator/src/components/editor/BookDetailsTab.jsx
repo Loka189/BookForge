@@ -11,7 +11,9 @@ const BookDetailsTab = ({
     isUploading,
     fileInputRef
 }) => {
-    const coverImageUrl = book.coverImage.startsWith('http') ? book.coverImage : `${BASE_URL}/${book.coverImage}`;
+    const coverImageUrl = book.coverImage?.url 
+  ? book.coverImage.url 
+  : "https://assets.xboxservices.com/assets/1d/5b/1d5bc84f-2135-4e2f-8ca6-bb000d97db7f.jpg?n=Elden-Ring_GLP-Poster-Image-1084_1920x1080.jpg";
   return (
     <div className="p-6 bg-white rounded-lg shadow-sm space-y-6">
       <h2>Book Details</h2>

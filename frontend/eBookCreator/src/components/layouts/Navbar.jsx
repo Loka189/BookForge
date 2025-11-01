@@ -14,6 +14,10 @@ const Navbar = () => {
     { name: "pricing", href: "#pricing" },
   ];
 
+  useEffect(() => {
+    setProfileDropdownOpen(false);
+    setIsOpen(false);
+  }, [isAuthenticated]);
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -64,13 +68,12 @@ const Navbar = () => {
                   setProfileDropdownOpen(!profileDropdownOpen);
                 }}
                 avatar={user?.avatar || ""}
-                companyName={user?.companyName || ""}
+                companyName={user?.name || ""}
                 email={user?.email || ""}
                 userRole={user?.role || ""}
-                onLogout={() => {
-                  e.stopPropagation();
-                  logout();
-                }}
+                onLogout={
+                  logout
+                }
               />
             ) : (
               <>

@@ -29,10 +29,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(rateLimiter({ windowSize: 60, maxRequests: 15 }));
 
-
-//static folder for uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);

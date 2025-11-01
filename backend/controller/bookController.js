@@ -1,5 +1,6 @@
 const Book = require('../models/Book');
-const { getCache, setCache,delCache } = require('../services/cacheService');
+const { getCache, setCache, delCache } = require('../services/cacheService');
+const cloudinary = require('../config/cloudinary');
 // @desc  Create new book
 // @route POST /api/books
 // @access Private
@@ -29,36 +30,49 @@ exports.createBook = async (req, res) => {
 // @route GET /api/books
 // @access Private
 exports.getBooks = async (req, res) => {
-  try {
-    const userID = req.user._id.toString();
+    try {
+        const userID = req.user._id.toString();
 
-    // 1️⃣ Try Redis cache first
-    const cacheKey = `books:${userID}`;
-    const cachedBooks = await getCache(cacheKey);
+        // 1️⃣ Try Redis cache first
+        const cacheKey = `books:${userID}`;
+        const cachedBooks = await getCache(cacheKey);
 
-    if (cachedBooks) {
-      console.log("📦 Serving from Redis cache");
-      return res.status(200).json(cachedBooks);
+        if (cachedBooks) {
+            console.log("📦 Serving from Redis cache");
+            return res.status(200).json(cachedBooks);
+        }
+
+        // 2️⃣ Cache miss → fetch from MongoDB
+        console.log("💾 Cache miss → fetching from MongoDB");
+        const books = await Book.aggregate([
+            { $match: { userID: req.user._id } },
+            { $sort: { createdAt: -1 } },
+            {
+                $project: {
+                    title: 1,
+                    author: 1,
+                    coverImage: 1,
+                    createdAt: 1,
+                    status: 1,
+                    chapterCount: { $size: { $ifNull: ['$chapters', []] } }
+                }
+            }
+        ]);
+
+        if (!books) {
+            return res.status(404).json({ message: "No books found" });
+        }
+
+        // 3️⃣ Cache result for 1 hour (3600 seconds)
+        if (books.length > 0) {
+            await setCache(cacheKey, books, 3600);
+        }
+
+        return res.status(200).json(books);
+    } catch (error) {
+        console.error("getBooks error:", error);
+        return res.status(500).json({ message: "Server error" });
     }
-
-    // 2️⃣ Cache miss → fetch from MongoDB
-    console.log("💾 Cache miss → fetching from MongoDB");
-    const books = await Book.find({ userID }).sort({ createdAt: -1 }); 
-
-    if (!books) {
-      return res.status(404).json({ message: "No books found" });
-    }
-
-    // 3️⃣ Cache result for 1 hour (3600 seconds)
-    if (books.length > 0) {
-      await setCache(cacheKey, books, 3600);
-    }
-
-    return res.status(200).json(books);
-  } catch (error) {
-    console.error("getBooks error:", error);
-    return res.status(500).json({ message: "Server error" });
-  }
 };
 
 
@@ -121,10 +135,6 @@ exports.deleteBook = async (req, res) => {
 // @desc Update a book's cover image
 // @route PUT /api/books/cover/:id
 // @access Private
-const fs = require('fs');
-
-const path = require('path');
-
 exports.updateBookCover = async (req, res) => {
     try {
         const book = await Book.findById(req.params.id);
@@ -140,27 +150,26 @@ exports.updateBookCover = async (req, res) => {
             return res.status(400).json({ message: 'No file uploaded' });
         }
 
-        // Delete old cover image if it exists
-        if (book.coverImage) {
-            const oldPath = path.join(__dirname, '..', book.coverImage);
-            fs.access(oldPath, fs.constants.F_OK, (err) => {
-                if (!err) {
-                    fs.unlink(oldPath, (err) => {
-                        if (err) console.error('Failed to delete old cover image:', err);
-                        else console.log('Old cover image deleted');
-                    });
-                }
-            });
+        // ✅ Delete old Cloudinary image if it exists
+        if (book.coverImage && book.coverImage.public_id) {
+            try {
+                await cloudinary.uploader.destroy(book.coverImage.public_id);
+                console.log('Old Cloudinary image deleted');
+            } catch (err) {
+                console.error('Failed to delete old image:', err.message);
+            }
         }
 
-        // Update book with new cover image
-        book.coverImage = `/uploads/${req.file.filename}`;
+        // ✅ Update book with new image URL & public_id
+        book.coverImage = {
+            url: req.file.path, // Cloudinary auto adds a CDN URL
+            public_id: req.file.filename || req.file.public_id, // fallback for storage
+        };
+
         const updatedBook = await book.save();
-
-        return res.status(200).json(updatedBook);
-
+        return res.status(200).json(updatedBook.coverImage,{ message: 'Cover image updated successfully' });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ message: 'Server error during cover image update' });
     }
 };

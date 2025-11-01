@@ -397,6 +397,7 @@ const handleGenerateChapterContent = async (index) => {
                 onBookChange={handleBookChange}
                 isUploading={isUploading}
                 fileInputRef={fileInputRef}
+                onCoverImageUpload={handleCoverImageUpload}
               />
             )}
           </div>

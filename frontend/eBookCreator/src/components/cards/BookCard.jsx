@@ -7,9 +7,9 @@ const BookCard = ({ book, onDelete }) => {
   const navigate = useNavigate();
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const coverImageUrl = book.coverImage
-    ? `${BASE_URL.replace(/\/$/, "")}${book.coverImage}`
-    : "https://assets.xboxservices.com/assets/1d/5b/1d5bc84f-2135-4e2f-8ca6-bb000d97db7f.jpg?n=Elden-Ring_GLP-Poster-Image-1084_1920x1080.jpg";
+  const coverImageUrl = (book.coverImage?.url && book.coverImage.url.trim() !== "") 
+  ? book.coverImage.url 
+  : "https://assets.xboxservices.com/assets/1d/5b/1d5bc84f-2135-4e2f-8ca6-bb000d97db7f.jpg?n=Elden-Ring_GLP-Poster-Image-1084_1920x1080.jpg";
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
@@ -76,7 +76,7 @@ const BookCard = ({ book, onDelete }) => {
           <div className="absolute bottom-3 left-3 right-3 flex items-center gap-2">
             <div className="flex items-center gap-1 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg text-white text-[10px] font-medium">
               <BookOpen className="w-3 h-3" />
-              <span>{book.chapters?.length || 0}</span>
+              <span>{book.chapterCount || 0}</span>
             </div>
             {book.views && (
               <div className="flex items-center gap-1 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg text-white text-[10px] font-medium">
