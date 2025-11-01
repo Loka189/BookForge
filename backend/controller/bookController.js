@@ -167,7 +167,7 @@ exports.updateBookCover = async (req, res) => {
         };
 
         const updatedBook = await book.save();
-        return res.status(200).json(updatedBook.coverImage,{ message: 'Cover image updated successfully' });
+        return res.status(200).json(updatedBook.coverImage);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Server error during cover image update' });

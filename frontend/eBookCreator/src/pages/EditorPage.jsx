@@ -130,7 +130,12 @@ const EditorPage = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
-      setBook(response.data);
+      setBook(
+      prevBook => ({
+        ...prevBook,
+        coverImage: response.data
+      })  
+      );
       toast.success('Cover image uploaded successfully');
     } catch (error) {
       toast.error('Error uploading cover image');
