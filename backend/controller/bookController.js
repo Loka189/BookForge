@@ -173,3 +173,66 @@ exports.updateBookCover = async (req, res) => {
         return res.status(500).json({ message: 'Server error during cover image update' });
     }
 };
+
+// @desc get all published books
+// @route get /api/books/published
+// @access Public
+exports.getPublishedBooks = async (req, res) => {
+    try {
+        // try redis cache first
+        const cacheKey = `publishedBooks`;
+        const cachedBooks = await getCache(cacheKey);
+        if (cachedBooks) {
+            console.log("📦 Serving published books from Redis cache");
+            return res.status(200).json(cachedBooks);
+        }
+        // cache miss -> fetch from MongoDB
+        console.log("💾 Cache miss → fetching published books from MongoDB");
+        const books = await Book.aggregate([
+            { $match: { status: 'published' } },
+            { $sort: { createdAt: -1 } },
+            {
+                $project: {
+                    title: 1,
+                    author: 1,
+                    subtitle: 1, // Include subtitle for search
+                    coverImage: 1,
+                    createdAt: 1,
+                    status: 1,
+                    chapterCount: { $size: { $ifNull: ['$chapters', []] } }
+                }
+            }
+        ])
+        // cache result for 1 hour (3600 seconds)
+        if (books.length > 0) {
+            await setCache(cacheKey, books, 3600);
+        }
+        res.status(200).json(books);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error while getting published books' });
+    }
+}
+
+// @desc publish a book
+// @route PUT /api/books/publish/:id
+// @access Private
+exports.publishBook = async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id);
+        if (!book) {
+            return res.status(404).json({ message: 'Book not found' });
+        }
+        if (book.userID.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized to publish this book' });
+        }
+        const cacheKey='publishedBooks';
+        // Invalidate published books cache
+        await delCache(cacheKey);
+        // Update book status to 'published'
+        book.status = 'published';
+        await book.save();
+        res.status(200).json({ message: 'Book published successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error during publishing' });
+    }
+};

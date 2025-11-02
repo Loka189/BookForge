@@ -101,6 +101,33 @@ const DashboardPage = () => {
     }
   };
 
+  // ✅ NEW: Handle Publish
+  const handlePublish = async (bookId) => {
+    try {
+      // Update book status to 'published' in the database
+      // await axiosInstance.put(`${API_PATHS.BOOKS.UPDATE_BOOK}/${bookId}`, {
+      //   status: 'published'
+      // });
+      const response = await axiosInstance.put(`${API_PATHS.BOOKS.PUBLISH_BOOK}/${bookId}`);
+      if (response.status !== 200) {
+        throw new Error('Failed to publish book');
+      }
+      
+      // Update local state to reflect the change
+      setBooks((prev) => prev.map(book => 
+        book._id === bookId 
+          ? { ...book, status: 'published' } 
+          : book
+      ));
+      
+      toast.success('Book published successfully!');
+    } catch (error) {
+      console.error('Failed to publish book:', error);
+      toast.error('Failed to publish book. Please try again.');
+      throw error; // Re-throw to let BookCard handle the error state
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
@@ -138,7 +165,7 @@ const DashboardPage = () => {
               No eBooks found.
             </h3>
             <p className="text-gray-500">
-              You haven’t created any eBooks yet. Click below to get started!
+              You haven't created any eBooks yet. Click below to get started!
             </p>
             <Button
               onClick={handleCreateBook}
@@ -164,6 +191,7 @@ const DashboardPage = () => {
                 key={book._id}
                 book={book}
                 onDelete={() => setBookToDelete(book._id)}
+                onPublish={handlePublish}
               />
             ))}
           </div>
