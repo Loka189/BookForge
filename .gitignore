@@ -9,3 +9,8 @@ frontend/dist/
 frontend/build/
 
 *dummy.js
+
+# Test coverage reports (DO NOT COMMIT)
+coverage/
+.nyc_output/
+*.lcov
