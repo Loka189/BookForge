@@ -105,9 +105,13 @@ const DashboardPage = () => {
   const handlePublish = async (bookId) => {
     try {
       // Update book status to 'published' in the database
-      await axiosInstance.put(`${API_PATHS.BOOKS.UPDATE_BOOK}/${bookId}`, {
-        status: 'published'
-      });
+      // await axiosInstance.put(`${API_PATHS.BOOKS.UPDATE_BOOK}/${bookId}`, {
+      //   status: 'published'
+      // });
+      const response = await axiosInstance.put(`${API_PATHS.BOOKS.PUBLISH_BOOK}/${bookId}`);
+      if (response.status !== 200) {
+        throw new Error('Failed to publish book');
+      }
       
       // Update local state to reflect the change
       setBooks((prev) => prev.map(book => 

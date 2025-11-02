@@ -212,3 +212,27 @@ exports.getPublishedBooks = async (req, res) => {
         res.status(500).json({ message: 'Server error while getting published books' });
     }
 }
+
+// @desc publish a book
+// @route PUT /api/books/publish/:id
+// @access Private
+exports.publishBook = async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id);
+        if (!book) {
+            return res.status(404).json({ message: 'Book not found' });
+        }
+        if (book.userID.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized to publish this book' });
+        }
+        const cacheKey='publishedBooks';
+        // Invalidate published books cache
+        await delCache(cacheKey);
+        // Update book status to 'published'
+        book.status = 'published';
+        await book.save();
+        res.status(200).json({ message: 'Book published successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error during publishing' });
+    }
+};

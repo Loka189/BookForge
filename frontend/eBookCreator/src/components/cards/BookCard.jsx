@@ -86,7 +86,7 @@ const BookCard = ({ book, onDelete, onPublish, showActions = true }) => {
                       e.stopPropagation();
                       navigate(`/editor/${book._id}`);
                     }}
-                    className="p-2 bg-white/95 hover:bg-white rounded-lg shadow-lg transition-all duration-300 hover:scale-110 hover:rotate-6 backdrop-blur-sm"
+                    className="p-2 bg-white/95 hover:bg-white rounded-lg shadow-lg transition-all duration-300 hover:scale-110 hover:rotate-6 backdrop-blur-sm cursor-pointer"
                     title="Edit Book"
                   >
                     <Edit2 size={14} className="text-violet-600" />
@@ -94,7 +94,7 @@ const BookCard = ({ book, onDelete, onPublish, showActions = true }) => {
                   {isDraft && (
                     <button
                       onClick={handlePublishClick}
-                      className="p-2 bg-white/95 hover:bg-green-50 rounded-lg shadow-lg transition-all duration-300 hover:scale-110 backdrop-blur-sm"
+                      className="p-2 bg-white/95 hover:bg-green-50 rounded-lg shadow-lg transition-all duration-300 hover:scale-110 backdrop-blur-sm cursor-pointer"
                       title="Publish Book"
                     >
                       <Upload size={14} className="text-green-600" />
@@ -105,7 +105,7 @@ const BookCard = ({ book, onDelete, onPublish, showActions = true }) => {
                       e.stopPropagation();
                       onDelete(book._id);
                     }}
-                    className="p-2 bg-white/95 hover:bg-red-50 rounded-lg shadow-lg transition-all duration-300 hover:scale-110 hover:-rotate-6 backdrop-blur-sm"
+                    className="p-2 bg-white/95 hover:bg-red-50 rounded-lg shadow-lg transition-all duration-300 hover:scale-110 hover:-rotate-6 backdrop-blur-sm cursor-pointer"
                     title="Delete Book"
                   >
                     <Trash2 size={14} className="text-red-600" />
@@ -268,7 +268,7 @@ const BookCard = ({ book, onDelete, onPublish, showActions = true }) => {
                   setShowPublishModal(false);
                 }}
                 disabled={isPublishing}
-                className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="cursor-pointer flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
@@ -278,7 +278,7 @@ const BookCard = ({ book, onDelete, onPublish, showActions = true }) => {
                   confirmPublish();
                 }}
                 disabled={isPublishing}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="cursor-pointer flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isPublishing ? (
                   <>

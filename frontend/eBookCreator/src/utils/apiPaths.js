@@ -12,7 +12,8 @@ export const API_PATHS={
         UPDATE_BOOK:'/api/books',
         DELETE_BOOK:'/api/books',
         UPDATE_COVER:'/api/books/cover',
-        GET_PUBLISHED_BOOKS:'/api/books/published'
+        GET_PUBLISHED_BOOKS:'/api/books/published',
+        PUBLISH_BOOK:'/api/books/publish'
     },
     AI:{
         GENERATE_OUTLINE:'/api/ai/generate-outline',
