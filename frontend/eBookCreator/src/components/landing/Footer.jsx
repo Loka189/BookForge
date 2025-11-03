@@ -1,5 +1,4 @@
-import React from "react";
-import { BookOpen, Twitter, Linkedin, Github, ArrowUp, Heart } from "lucide-react";
+import { BookOpen, Linkedin, Github, ArrowUp, Heart, TwitterIcon } from "lucide-react";
 
 const Footer = () => {
   const scrollToTop = () => {
@@ -39,9 +38,9 @@ const Footer = () => {
             {/* Enhanced Social Media */}
             <div className="flex space-x-4 mt-8">
               {[
-                { icon: Twitter, link: "https://twitter.com/yourprofile" },
-                { icon: Linkedin, link: "https://linkedin.com/in/yourprofile" },
-                { icon: Github, link: "https://github.com/yourprofile" },
+                { icon: TwitterIcon, link: "https://x.com/lokanath04" },
+                { icon: Linkedin, link: "https://www.linkedin.com/in/lokanath-sahoo-189elden" },
+                { icon: Github, link: "https://github.com/Loka189/" },
               ].map(({ icon: Icon, link }, i) => (
                 <a
                   key={i}

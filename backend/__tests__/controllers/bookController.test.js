@@ -101,7 +101,7 @@ describe('Book Controller Tests', () => {
             await createBook(req, res);
 
             expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Server error' });
+            expect(res.json).toHaveBeenCalledWith({ message: 'Server error during book creation' });
         });
     });
 
@@ -169,7 +169,7 @@ describe('Book Controller Tests', () => {
             await getBooks(req, res);
 
             expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Server error' });
+            expect(res.json).toHaveBeenCalledWith({ message: 'Server error during fetching books for a single user' });
         });
     });
 
@@ -225,7 +225,7 @@ describe('Book Controller Tests', () => {
             await getBookById(req, res);
 
             expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Server error' });
+            expect(res.json).toHaveBeenCalledWith({ message: 'Server error during fetching book by ID' });
         });
     });
 
@@ -288,7 +288,7 @@ describe('Book Controller Tests', () => {
             await updateBook(req, res);
 
             expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Server error' });
+            expect(res.json).toHaveBeenCalledWith({ message: 'Server error during updating book' });
         });
     });
 
@@ -343,7 +343,7 @@ describe('Book Controller Tests', () => {
             await deleteBook(req, res);
 
             expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Server error' });
+            expect(res.json).toHaveBeenCalledWith({ message: 'Server error during deleting book' });
         });
     });
 

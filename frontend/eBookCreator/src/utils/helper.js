@@ -1,5 +1,3 @@
-
-
 export const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if(!email){

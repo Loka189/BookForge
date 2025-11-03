@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import InputField from '../components/ui/InputField'
-import Button from '../components/ui/Button'
 import { User, Mail, Building, Lock, Save, Camera, Loader2, Shield, BookOpen, Calendar } from 'lucide-react'
 import toast from 'react-hot-toast'
 import axiosInstance from '../utils/axiosInstance'
-import { API_PATHS } from '../utils/apiPaths'
 
 const ProfilePage = () => {
   const { user, updateUser } = useAuth()
