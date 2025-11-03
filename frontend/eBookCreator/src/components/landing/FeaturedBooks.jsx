@@ -1,15 +1,16 @@
 // src/components/landing/FeaturedBooks.jsx
 import React, { useState, useEffect } from 'react';
-import { BookOpen, User, ArrowRight, Sparkles } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { BookOpen, ArrowRight, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
+import BookCard from '../cards/BookCard';
+
 const FeaturedBooks = () => {
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const { isAuthenticated } = useAuth();
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -26,14 +27,6 @@ const FeaturedBooks = () => {
 
         fetchBooks();
     }, []);
-
-    const handleReadClick = (bookId) => {
-        if (isAuthenticated) {
-            navigate(`/view-book/${bookId}`);
-        } else {
-            navigate('/login');
-        }
-    };
 
     if (loading) {
         return (
@@ -90,75 +83,11 @@ const FeaturedBooks = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {books.map((book) => (
-                            <div
-                                key={book._id}
-                                className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200/50 hover:scale-[1.02] hover:-translate-y-1"
-                            >
-                                {/* Book Cover */}
-                                <div className="relative h-64 bg-gradient-to-br from-violet-100 to-purple-100 overflow-hidden">
-                                    {book.coverImage ? (
-                                        <img
-                                            src={(book.coverImage?.url && book.coverImage.url.trim() !== "")
-                                                ? book.coverImage.url
-                                                : "https://assets.xboxservices.com/assets/1d/5b/1d5bc84f-2135-4e2f-8ca6-bb000d97db7f.jpg?n=Elden-Ring_GLP-Poster-Image-1084_1920x1080.jpg"}
-                                            alt={book.title}
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <BookOpen className="w-20 h-20 text-violet-300" />
-                                        </div>
-                                    )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                                    {/* Hover overlay with Read button */}
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <button
-                                            onClick={() => handleReadClick(book._id)}
-                                            className="bg-white text-violet-600 px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-violet-600 hover:text-white transition-all duration-300 flex items-center gap-2"
-                                        >
-                                            <BookOpen className="w-5 h-5" />
-                                            Read Now
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Book Info */}
-                                <div className="p-6">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-violet-600 transition-colors">
-                                        {book.title}
-                                    </h3>
-
-                                    {book.subtitle && (
-                                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                                            {book.subtitle}
-                                        </p>
-                                    )}
-
-                                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                                        <div className="flex items-center space-x-2">
-                                            <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center">
-                                                <User className="w-4 h-4 text-white" />
-                                            </div>
-                                            <span className="text-sm font-medium text-gray-700">
-                                                {book.author}
-                                            </span>
-                                        </div>
-
-                                        <button
-                                            onClick={() => handleReadClick(book._id)}
-                                            className="text-violet-600 hover:text-violet-700 transition-colors"
-                                        >
-                                            <ArrowRight className="w-5 h-5" />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Gradient border effect on hover */}
-                                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                                    <div className="absolute inset-0 rounded-2xl border-2 border-violet-500/50"></div>
-                                </div>
-                            </div>
+                            <BookCard 
+                                key={book._id} 
+                                book={book} 
+                                showActions={false} 
+                            />
                         ))}
                     </div>
                 )}

@@ -6,14 +6,18 @@ const upload=require('../middlewares/uploadMiddleware');
 
 
 
-// Define book routes
-// Published books route (no protection needed)
+// @Define book routes
+// public routes
 router.get('/published', getPublishedBooks);
-// Apply protection middleware to all book routes
-router.use(protect);
-router.route('/').post(createBook).get(getBooks);
-router.route('/:id').get(getBookById).put(updateBook).delete(deleteBook);
-router.route('/cover/:id').put(upload.single('coverImage'), updateBookCover);
-router.route('/publish/:id').put(publishBook);
 
+
+// private routes
+router.use(protect);
+router.get('/', getBooks);
+router.post('/', createBook);
+router.get('/:id', getBookById);
+router.put('/:id', updateBook);
+router.delete('/:id', deleteBook);
+router.put('/cover/:id', upload.single('coverImage'), updateBookCover);
+router.put('/publish/:id', publishBook);
 module.exports = router; 

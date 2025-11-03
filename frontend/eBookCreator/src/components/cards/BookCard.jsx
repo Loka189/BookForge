@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trash2, Edit2, BookOpen, Calendar, Eye, MoreVertical, Upload, CheckCircle, AlertCircle } from "lucide-react";
-import { BASE_URL } from "../../utils/apiPaths";
-
 const BookCard = ({ book, onDelete, onPublish, showActions = true }) => {
   const navigate = useNavigate();
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -12,7 +10,7 @@ const BookCard = ({ book, onDelete, onPublish, showActions = true }) => {
 
   const coverImageUrl = (book.coverImage?.url && book.coverImage.url.trim() !== "") 
   ? book.coverImage.url 
-  : "https://assets.xboxservices.com/assets/1d/5b/1d5bc84f-2135-4e2f-8ca6-bb000d97db7f.jpg?n=Elden-Ring_GLP-Poster-Image-1084_1920x1080.jpg";
+  : "/no cover 1.jpg";
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });

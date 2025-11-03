@@ -170,7 +170,7 @@ const Hero = () => {
                 <div className="relative">
                   <img
                     className="w-full h-auto object-cover"
-                    src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=80"
+                    src="/hero-img.jpg"
                     alt="eBook Creation Platform"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
@@ -221,7 +221,7 @@ const Hero = () => {
                 </div>
               </div>
 
-              
+
             </div>
           </div>
         </div>

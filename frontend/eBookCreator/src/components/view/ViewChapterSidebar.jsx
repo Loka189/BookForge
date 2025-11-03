@@ -1,4 +1,3 @@
-import React from 'react'
 import { BookOpen, Check, ChevronLeft } from 'lucide-react'
 
 const ViewChapterSidebar = ({

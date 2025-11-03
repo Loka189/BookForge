@@ -22,7 +22,7 @@ exports.createBook = async (req, res) => {
         await delCache(cacheKey);
         res.status(201).json(book);
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error during book creation' });
     }
 };
 
@@ -38,12 +38,12 @@ exports.getBooks = async (req, res) => {
         const cachedBooks = await getCache(cacheKey);
 
         if (cachedBooks) {
-            console.log("📦 Serving from Redis cache");
+            console.log("📦 Serving all books from Redis cache for a single user");
             return res.status(200).json(cachedBooks);
         }
 
         // 2️⃣ Cache miss → fetch from MongoDB
-        console.log("💾 Cache miss → fetching from MongoDB");
+        console.log("💾 Cache miss → fetching from MongoDB for a single user");
         const books = await Book.aggregate([
             { $match: { userID: req.user._id } },
             { $sort: { createdAt: -1 } },
@@ -71,7 +71,7 @@ exports.getBooks = async (req, res) => {
         return res.status(200).json(books);
     } catch (error) {
         console.error("getBooks error:", error);
-        return res.status(500).json({ message: "Server error" });
+        return res.status(500).json({ message: "Server error during fetching books for a single user" });
     }
 };
 
@@ -85,12 +85,14 @@ exports.getBookById = async (req, res) => {
         if (!book) {
             return res.status(404).json({ message: 'Book not found' });
         }
-        if (book.userID.toString() !== req.user._id.toString()) {
+        const isOwner = book.userID.toString() === req.user._id.toString();
+        const isPublished = book.status === 'published';
+        if (!isOwner && !isPublished) {
             return res.status(403).json({ message: 'Not authorized to access this book' });
         }
         res.status(200).json(book);
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error during fetching book by ID' });
     }
 };
 
@@ -109,7 +111,7 @@ exports.updateBook = async (req, res) => {
         const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.status(200).json(updatedBook);
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error during updating book' });
     }
 };
 
@@ -128,7 +130,7 @@ exports.deleteBook = async (req, res) => {
         await Book.findByIdAndDelete(req.params.id);
         res.status(204).json({ message: 'Book deleted' });
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error during deleting book' });
     }
 };
 

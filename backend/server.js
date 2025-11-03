@@ -27,7 +27,7 @@ connectDB();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(rateLimiter({ windowSize: 60, maxRequests: 15 }));
+app.use(rateLimiter({ windowSize: 60, maxRequests: 20 })); 
 
 // Routes
 app.use('/api/auth', authRoutes);
